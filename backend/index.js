@@ -16,10 +16,13 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', '*')
     next();
 })
+
 app.get(/.*/, (req, res) => {
-    console.log(`${new Date().toISOString()} GET`)
-    res.json({id: ID})
-})
+  console.log(`${new Date().toISOString()} GET`);
+  const id = uuidv4();
+  res.status(200).send(`Success! ID: ${id}`);
+});
+
 
 app.listen(PORT, () => {
     console.log(`Backend started on ${PORT}. ctrl+c to exit`)
