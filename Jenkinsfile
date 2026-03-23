@@ -2,15 +2,18 @@ pipeline {
     agent any
 
     environment {
-        // ====> Replace with your AWS region, e.g., 'us-east-1'
         AWS_REGION = 'us-east-2'
 
-        // ====> Replace with your own ECR repository URIs
         FRONTEND_REPO = '238845559349.dkr.ecr.us-east-2.amazonaws.com/devops-challenge-frontend'
         BACKEND_REPO  = '238845559349.dkr.ecr.us-east-2.amazonaws.com/devops-challenge-backend'
+
+        ECS_CLUSTER = 'devops-challenge-cluster'
+        FRONTEND_SERVICE = 'devops-challenge-frontend-service'
+        BACKEND_SERVICE  = 'devops-challenge-backend-service'
     }
 
     stages {
+
         stage('Checkout code') {
             steps {
                 checkout scm
@@ -58,36 +61,19 @@ pipeline {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
                     script {
-                        sh '''
-                            aws ecs update-service --cluster 
-Cluster
-	
-Services
-	
-Tasks
-	
-Container instances
-	
-CloudWatch monitoring
-	
-Capacity provider strategy
+                        sh """
+                            aws ecs update-service \
+                                --cluster $ECS_CLUSTER \
+                                --service $FRONTEND_SERVICE \
+                                --force-new-deployment \
+                                --region $AWS_REGION
 
-devops-challenge-cluster --service devops-challenge-frontend-service --force-new-deployment --region $AWS_REGION
-                            aws ecs update-service --cluster 
-Cluster
-	
-Services
-	
-Tasks
-	
-Container instances
-	
-CloudWatch monitoring
-	
-Capacity provider strategy
-
-devops-challenge-cluster --service devops-challenge-backend-service --force-new-deployment --region $AWS_REGION
-                        '''
+                            aws ecs update-service \
+                                --cluster $ECS_CLUSTER \
+                                --service $BACKEND_SERVICE \
+                                --force-new-deployment \
+                                --region $AWS_REGION
+                        """
                     }
                 }
             }
