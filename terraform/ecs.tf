@@ -182,4 +182,4 @@ resource "aws_ecs_service" "backend" {
     Name        = "${var.project_name}-backend-service"
     Environment = var.environment
   }
-} 
+}
